@@ -1,4 +1,5 @@
 *.enc
+*.rec
 *.dec
 app_bitstream_merge
 app_decoder
