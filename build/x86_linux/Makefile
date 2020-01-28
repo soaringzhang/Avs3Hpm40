@@ -15,6 +15,7 @@ RM = rm -rf
 CFLAGS  = -g -O3 -fomit-frame-pointer -Wall -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-attributes -Werror -Wno-strict-overflow  -std=c99
 CFLAGS += -DLINUX -DX86_64 -msse4.2
 CFLAGS += -I$(DIR_INC) -DIFVC_TRACE=0 -DIFVC_ASSERT=1
+CFLAGS += $(ADD_CFLAGS)
 
 LDFLAGS = -L$(DIR_LIB) -lcom -lm -lstdc++
 ARFLAGS = r
@@ -30,11 +31,6 @@ CSRCS = $(DIR_SRC)/com_img.c \
 		$(DIR_SRC)/com_sao.c \
 		$(DIR_SRC)/com_ComAdaptiveLoopFilter.c \
 		$(DIR_SRC)/com_picman.c \
-		$(DIR_SRC)/dec.c \
-		$(DIR_SRC)/dec_eco.c \
-		$(DIR_SRC)/dec_util.c \
-		$(DIR_SRC)/dec_bsr.c \
-		$(DIR_SRC)/dec_DecAdaptiveLoopFilter.c \
 		$(DIR_SRC)/enc.c \
 		$(DIR_SRC)/enc_eco.c \
 		$(DIR_SRC)/enc_mode.c \
@@ -47,10 +43,16 @@ CSRCS = $(DIR_SRC)/com_img.c \
 		$(DIR_SRC)/enc_sad.c \
 		$(DIR_SRC)/enc_EncAdaptiveLoopFilter.c \
 
+#		$(DIR_SRC)/dec.c \
+#		$(DIR_SRC)/dec_eco.c \
+#		$(DIR_SRC)/dec_util.c \
+#		$(DIR_SRC)/dec_bsr.c \
+#		$(DIR_SRC)/dec_DecAdaptiveLoopFilter.c \
 
 CSRCS_APP =	$(DIR_APP)/app_encoder.c \
-			$(DIR_APP)/app_decoder.c \
-			$(DIR_APP)/app_bitstream_merge.c
+
+#			$(DIR_APP)/app_decoder.c \
+#			$(DIR_APP)/app_bitstream_merge.c
 
 OBJS = $(CSRCS:.c=.o)
 
@@ -62,8 +64,9 @@ RELEASE: depend $(OBJS)
 	$(AR) $(ARFLAGS) $(DIR_LIB)/libcom.a $(OBJS)
 	$(MKDIR) $(DIR_BIN)
 	$(CC) -o $(DIR_BIN)/app_encoder $(CFLAGS) $(DIR_APP)/app_encoder.c $(LDFLAGS)
-	$(CC) -o $(DIR_BIN)/app_decoder $(CFLAGS) $(DIR_APP)/app_decoder.c $(LDFLAGS)
-	$(CC) -o $(DIR_BIN)/app_bitstream_merge $(CFLAGS) $(DIR_APP)/app_bitstream_merge.c $(LDFLAGS)
+
+#	$(CC) -o $(DIR_BIN)/app_decoder $(CFLAGS) $(DIR_APP)/app_decoder.c $(LDFLAGS)
+#	$(CC) -o $(DIR_BIN)/app_bitstream_merge $(CFLAGS) $(DIR_APP)/app_bitstream_merge.c $(LDFLAGS)
 
 depend: Makefile $(CSRCS) $(CSRCS_APP)
 	$(CC) -M $(CFLAGS) $(CSRCS) $(CSRCS_APP) > .$@

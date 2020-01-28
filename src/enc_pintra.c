@@ -33,6 +33,7 @@
 
 #include "enc_def.h"
 #include <math.h>
+#include "kernel.h"
 
 int pintra_init_frame(ENC_CTX * ctx)
 {
@@ -136,7 +137,7 @@ static double pintra_residue_rdo(ENC_CTX *ctx, ENC_CORE *core, pel *org_luma, pe
                 mod = pi->addr_rec_pic[Y_C] + (tb_y * s_mod) + tb_x;
                 pred_tb = mod_info_curr->pred[Y_C]; // pred is temp memory
                 com_get_nbr(tb_x, tb_y, tb_w, tb_h, mod, s_mod, avail_tb, core->nb, tb_scup, ctx->map.map_scu, ctx->info.pic_width_in_scu, ctx->info.pic_height_in_scu, bit_depth, Y_C);
-                com_ipred(core->nb[0][0] + 3, core->nb[0][1] + 3, pred_tb, intra_mode, tb_w, tb_h, bit_depth, avail_tb, mod_info_curr->ipf_flag);
+                KERNEL(com_ipred)(core->nb[0][0] + 3, core->nb[0][1] + 3, pred_tb, intra_mode, tb_w, tb_h, bit_depth, avail_tb, mod_info_curr->ipf_flag);
             }
 
             pel* org_luma_tb = org_luma + (tb_x - pb_x) + (tb_y - pb_y) * s_org;
@@ -311,7 +312,7 @@ static int make_ipred_list(ENC_CTX * ctx, ENC_CORE * core, int width, int height
         int bit_cnt, shift = 0;
         pel * pred_buf = NULL;
         pred_buf = pi->pred_cache[i];
-        com_ipred(core->nb[0][0] + 3, core->nb[0][1] + 3, pred_buf, i, width, height, bit_depth, avail_cu, core->mod_info_curr.ipf_flag);
+        KERNEL(com_ipred)(core->nb[0][0] + 3, core->nb[0][1] + 3, pred_buf, i, width, height, bit_depth, avail_cu, core->mod_info_curr.ipf_flag);
         cost_satd = calc_satd_16b(width, height, org, pred_buf, s_org, width, bit_depth);
         cost = (double)cost_satd;
         SBAC_LOAD(core->s_temp_run, core->s_curr_best[cu_width_log2 - 2][cu_height_log2 - 2]);

@@ -716,4 +716,6 @@ void enc_set_patch_idx(s8 * map_patch_idx, PATCH_INFO * patch, int pic_width, in
 #include "enc_tbl.h"
 
 
+#include "kernel.h"
+
 #endif /* _ENC_DEF_H_ */

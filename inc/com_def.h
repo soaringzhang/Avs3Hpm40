@@ -1407,4 +1407,6 @@ enum TRANS_TYPE
 #include "com_mc.h"
 #include "com_img.h"
 
+
+
 #endif /* _COM_DEF_H_ */

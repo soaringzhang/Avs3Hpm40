@@ -1529,7 +1529,7 @@ static double mode_coding_unit(ENC_CTX *ctx, ENC_CORE *core, int x, int y, int c
             for (ipf_flag = 0; ipf_flag < ipf_passes_num; ++ipf_flag)
             {
                 core->mod_info_curr.ipf_flag = ipf_flag;
-                cost = analyze_intra_cu(ctx, core);
+                cost = KERNEL(analyze_intra_cu)(ctx, core);
 #if PRINT_CU
 #if FIXED_SPLIT
                 printf("\n[intra] ctu_idx_seq %5d x %4d y %4d w %3d h %3d tree %d cost %12.1f", ctx->ctu_idx_in_sequence, x, y, cu_width, cu_height, ctx->tree_status, cost == MAX_COST ? 9999999 : cost);
