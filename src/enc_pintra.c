@@ -66,7 +66,7 @@ int pintra_init_lcu(ENC_CTX * ctx, ENC_CORE * core)
 }
 
 //Note: this is PB-based RDO
-static double pintra_residue_rdo(ENC_CTX *ctx, ENC_CORE *core, pel *org_luma, pel *org_cb, pel *org_cr, int s_org, int s_org_c, int cu_width_log2, int cu_height_log2,
+double pintra_residue_rdo(ENC_CTX *ctx, ENC_CORE *core, pel *org_luma, pel *org_cb, pel *org_cr, int s_org, int s_org_c, int cu_width_log2, int cu_height_log2,
                                  s32 *dist, int bChroma, int pb_idx, int x, int y)
 {
     COM_MODE *mod_info_curr = &core->mod_info_curr;
@@ -189,7 +189,7 @@ static double pintra_residue_rdo(ENC_CTX *ctx, ENC_CORE *core, pel *org_luma, pe
 #endif
 
         u16 avail_cu = com_get_avail_intra(mod_info_curr->x_scu, mod_info_curr->y_scu, ctx->info.pic_width_in_scu, mod_info_curr->scup, ctx->map.map_scu);
-        com_ipred_uv(core->nb[1][0] + 3, core->nb[1][1] + 3, pi->pred[U_C], mod_info_curr->ipm[PB0][1], mod_info_curr->ipm[PB0][0], cu_width >> 1, cu_height >> 1, bit_depth, avail_cu
+        KERNEL(com_ipred_uv)(core->nb[1][0] + 3, core->nb[1][1] + 3, pi->pred[U_C], mod_info_curr->ipm[PB0][1], mod_info_curr->ipm[PB0][0], cu_width >> 1, cu_height >> 1, bit_depth, avail_cu
 #if TSCPM
                      , U_C, piRecoY, strideY, core->nb
 #endif
@@ -203,7 +203,7 @@ static double pintra_residue_rdo(ENC_CTX *ctx, ENC_CORE *core, pel *org_luma, pe
         }
 
         com_recon(SIZE_2Nx2N, resi, pi->pred[U_C], mod_info_curr->num_nz, U_C, cu_width >> 1, cu_height >> 1, cu_width >> 1, pi->rec[U_C], bit_depth);
-        com_ipred_uv(core->nb[2][0] + 3, core->nb[2][1] + 3, pi->pred[V_C], mod_info_curr->ipm[PB0][1], mod_info_curr->ipm[PB0][0], cu_width >> 1, cu_height >> 1, bit_depth, avail_cu
+        KERNEL(com_ipred_uv)(core->nb[2][0] + 3, core->nb[2][1] + 3, pi->pred[V_C], mod_info_curr->ipm[PB0][1], mod_info_curr->ipm[PB0][0], cu_width >> 1, cu_height >> 1, bit_depth, avail_cu
 #if TSCPM
                      , V_C, piRecoY, strideY, core->nb
 #endif
@@ -553,7 +553,7 @@ double analyze_intra_cu(ENC_CTX *ctx, ENC_CORE *core)
                     i = ipred_list[j];
                     mod_info_curr->ipm[pb_part_idx][0] = (s8)i;
                     mod_info_curr->ipm[pb_part_idx][1] = IPD_INVALID;
-                    cost_pb_temp = pintra_residue_rdo(ctx, core, org, NULL, NULL, s_org, s_org_c, cu_width_log2, cu_height_log2, &dist_t, 0, pb_part_idx, x, y);
+                    cost_pb_temp = KERNEL(pintra_residue_rdo)(ctx, core, org, NULL, NULL, s_org, s_org_c, cu_width_log2, cu_height_log2, &dist_t, 0, pb_part_idx, x, y);
 #if PRINT_CU_LEVEL_2
                     printf("\nluma pred mode %2d cost_pb_temp %10.1f", i, cost_pb_temp);
                     double val = 2815.9;
@@ -762,7 +762,7 @@ double analyze_intra_cu(ENC_CTX *ctx, ENC_CORE *core)
             }
 #endif
 
-            cost_temp = pintra_residue_rdo(ctx, core, org, org_cb, org_cr, s_org, s_org_c, cu_width_log2, cu_height_log2, &dist_t, 1, 0, x, y);
+            cost_temp = KERNEL(pintra_residue_rdo)(ctx, core, org, org_cb, org_cr, s_org, s_org_c, cu_width_log2, cu_height_log2, &dist_t, 1, 0, x, y);
 #if PRINT_CU_LEVEL_2
             printf("\nchro pred mode %2d cost_temp %10.1f", i, cost_temp);
             double val = 2815.9;

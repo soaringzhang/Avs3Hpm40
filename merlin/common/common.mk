@@ -52,8 +52,9 @@ CFLAGS := $(ADD_CFLAGS) $(CFLAGS)
 
 kernel_separate:  kernel_clean cp_src
 	make macro 
-	cd separate; echo "cd separate; time mars_opt -e c -p kernel_separate -a kernel_name_suffix="_m" $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L) " |& tee mars_opt.log
-	cd separate;                    time mars_opt -e c -p kernel_separate -a kernel_name_suffix="_m" $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L)   |& tee -a mars_opt.log
+	-mv ../src/__merlinkernel.c ../src/__merlinkernel.c.bak
+	cd separate; echo "cd separate; time mars_opt -e c -p kernel_separate -a kernel_name_suffix="_m" -a simple=on $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L) " |& tee mars_opt.log
+	cd separate;                    time mars_opt -e c -p kernel_separate -a kernel_name_suffix="_m" -a simple=on $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L)   |& tee -a mars_opt.log
 	ls src >& /dev/null || mkdir src
 	cd separate; cp __merlinkernel_*.c ../src/__merlinkernel.c; cp merlin_type_define.h ../src/
 	make kernel_lib
@@ -64,8 +65,11 @@ kernel_lib:
 test: kernel_lib
 	make test -C ../../run/ ADD_CFLAGS="-I$(KERNEL_DIR)/../common -DMCC_ACC $(ADD_CFLAGS) -L$(KERNEL_DIR)/src -lkernel -Wno-error=unknown-pragmas"
 
+test_clean: 
+	make clean -C ../../run/ ADD_CFLAGS="-I$(KERNEL_DIR)/../common -DMCC_ACC $(ADD_CFLAGS) -L$(KERNEL_DIR)/src -lkernel -Wno-error=unknown-pragmas"
+
 debug :  
-	cd separate; gdb --args mars_opt_org -e c -p kernel_separate -a kernel_name_suffix="_m" $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L) 
+	cd separate; gdb --args mars_opt_org -e c -p kernel_separate -a kernel_name_suffix="_m" -a simple=on $(CFLAGS) $(SEP_CODE) $(INCL_FLAGS_L) 
 
 cp_src: 
 	cd separate; cp -r $(SW_DIR)/* . ; cd -
